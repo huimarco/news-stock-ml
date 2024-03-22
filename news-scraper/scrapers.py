@@ -1,15 +1,21 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import pandas as pd
+import datetime
 
 # Function to scrape all headlines on WSJ on a given day
 # CHANGE TO ACCEPT DATETIME OBJECTS AND ITERATE THROUGH PAGES
-def scrape_wsj(year, month, date):
+def scrape_wsj_date(date):
+    # Extract year, month, day
+    year = str(date.year)
+    month = str(date.month).zfill(2)  # Zero-padding for single-digit months
+    day = str(date.day).zfill(2)
+
     # Start a WebDriver (you need to have chromedriver installed in your system and its path added to the environment variables)
-    driver = webdriver.Chrome()
+    driver = webdriver.Edge()
 
     # URL of the webpage to scrape
-    url = f'https://www.wsj.com/news/archive/{year}/{month}/{date}'
+    url = f'https://www.wsj.com/news/archive/{year}/{month}/{day}'
 
     # Open the webpage
     driver.get(url)
@@ -52,3 +58,12 @@ def scrape_wsj(year, month, date):
     df = pd.DataFrame(data)
 
     return df
+
+def scrape_wsj(start_date, end_date):
+    # Generate a list of DataFrames for each day
+    dfs = [scrape_wsj_date(current_date) for current_date in pd.date_range(start_date, end_date)]
+    
+    # Concatenate all DataFrames in the list into a single DataFrame
+    output_df = pd.concat(dfs, ignore_index=True)
+    
+    return output_df
