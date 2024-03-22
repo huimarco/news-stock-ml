@@ -49,6 +49,6 @@ def scrape_wsj(year, month, date):
         'Published Time': published_times
     }
 
-    headlines_df = pd.DataFrame(data)
+    df = pd.DataFrame(data)
 
-    return headlines_df
+    return df
