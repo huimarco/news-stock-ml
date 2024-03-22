@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 # Function to scrape all headlines on WSJ on a given day
-# ONLY SCRAPES PAGE 1 FOR NOW
+# CHANGE TO ACCEPT DATETIME OBJECTS AND ITERATE THROUGH PAGES
 def scrape_wsj(year, month, date):
     # Start a WebDriver (you need to have chromedriver installed in your system and its path added to the environment variables)
     driver = webdriver.Chrome()
