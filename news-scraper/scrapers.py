@@ -32,26 +32,37 @@ def scrape_wsj_date(driver, date):
         if not articles: 
             break
         
-        all_articles.append(articles)
+        all_articles.extend(articles)
         
         # Increment page
         page_num += 1
 
     return all_articles
 
-def scrape_wsj(start_date, end_date):
+def scrape_wsj_date_range(start_date, end_date):
     # Start a WebDriver (you need to have chromedriver installed in your system and its path added to the environment variables)
     driver = webdriver.Edge()
 
-    # Generate a list of DataFrames for each day
-    all_articles = [scrape_wsj_date(driver, current_date) for current_date in pd.date_range(start_date, end_date)]
+    # Initialize an empty list to store all articles
+    all_articles = []
+
+    # Iterate over each date in the specified range
+    for current_date in pd.date_range(start_date, end_date):
+        # Scrape articles for the current date
+        articles_for_date = scrape_wsj_date(driver, current_date)
+        
+        # Extend the list of all_articles with the articles for the current date
+        all_articles.extend(articles_for_date)
 
     # Close the WebDriver
     driver.quit()
     
     return all_articles
 
-def extract_wsj_date(articles):
+def scrape_wsj(start_date, end_date):
+
+    articles = scrape_wsj_date_range(start_date, end_date)
+
     # Initialize lists to store data
     topics = []
     headlines = []
