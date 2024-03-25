@@ -39,10 +39,8 @@ def scrape_wsj_date(driver, date):
 
     return all_articles
 
-def scrape_wsj_date_range(start_date, end_date):
-    # Start a WebDriver (you need to have chromedriver installed in your system and its path added to the environment variables)
-    driver = webdriver.Edge()
-
+# Function to scrape all articles on WSJ on a given date range
+def scrape_wsj_date_range(driver, start_date, end_date):
     # Initialize an empty list to store all articles
     all_articles = []
 
@@ -53,15 +51,19 @@ def scrape_wsj_date_range(start_date, end_date):
         
         # Extend the list of all_articles with the articles for the current date
         all_articles.extend(articles_for_date)
-
-    # Close the WebDriver
-    driver.quit()
     
     return all_articles
 
+# Function to scrape all articles on WSJ on a given date range and return dataframe output
 def scrape_wsj(start_date, end_date):
+    # Start a WebDriver (you need to have chromedriver installed in your system and its path added to the environment variables)
+    driver = webdriver.Edge()
 
-    articles = scrape_wsj_date_range(start_date, end_date)
+    # Scrape articles in given date range
+    articles = scrape_wsj_date_range(driver, start_date, end_date)
+
+    # Close the WebDriver
+    driver.quit()
 
     # Initialize lists to store data
     topics = []
@@ -94,6 +96,7 @@ def scrape_wsj(start_date, end_date):
         'Published Time': published_times,
         'URL': article_links
     }
+    
     df = pd.DataFrame(data)
 
     return df
