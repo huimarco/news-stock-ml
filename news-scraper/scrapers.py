@@ -1,10 +1,10 @@
-from selenium import webdriver
+import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import datetime
 
 # Function to scrape all headlines on WSJ on a given day
-def scrape_wsj_date(driver, date):
+def scrape_wsj_date(date):
     # Base URL
     base_url = f'https://www.wsj.com/news/archive/{str(date.year)}/{str(date.month).zfill(2)}/{str(date.day).zfill(2)}?page='
 
@@ -14,16 +14,19 @@ def scrape_wsj_date(driver, date):
     # Create page counter
     page_num = 1
 
+    # Define header
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+
     # Loop through each page
     while True:
         # URL of the webpage to scrape
         url = base_url + str(page_num)
 
         # Open the webpage
-        driver.get(url)
+        response = requests.get(url, headers=headers)
 
         # Parse the HTML content
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        soup = BeautifulSoup(response.text, 'html.parser')
 
         # Find all articles on the page
         articles = soup.find_all('article')
@@ -40,14 +43,14 @@ def scrape_wsj_date(driver, date):
     return all_articles
 
 # Function to scrape all articles on WSJ on a given date range
-def scrape_wsj_date_range(driver, start_date, end_date):
+def scrape_wsj_date_range(start_date, end_date):
     # Initialize an empty list to store all articles
     all_articles = []
 
     # Iterate over each date in the specified range
     for current_date in pd.date_range(start_date, end_date):
         # Scrape articles for the current date
-        articles_for_date = scrape_wsj_date(driver, current_date)
+        articles_for_date = scrape_wsj_date(current_date)
         
         # Extend the list of all_articles with the articles for the current date
         all_articles.extend(articles_for_date)
@@ -56,14 +59,8 @@ def scrape_wsj_date_range(driver, start_date, end_date):
 
 # Function to scrape all articles on WSJ on a given date range and return dataframe output
 def scrape_wsj(start_date, end_date):
-    # Start a WebDriver (you need to have chromedriver installed in your system and its path added to the environment variables)
-    driver = webdriver.Edge()
-
     # Scrape articles in given date range
-    articles = scrape_wsj_date_range(driver, start_date, end_date)
-
-    # Close the WebDriver
-    driver.quit()
+    articles = scrape_wsj_date_range(start_date, end_date)
 
     # Initialize lists to store data
     topics = []
